@@ -18,8 +18,13 @@ class ExpensesPage extends StatelessWidget {
         onPressed: () {
           // Ação para adicionar novo item
         },
+        shape: const CircleBorder(),
         backgroundColor: Colors.blue,
-        child: const Icon(Icons.add, size: 32),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 48,
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
