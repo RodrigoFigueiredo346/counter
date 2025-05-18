@@ -1,3 +1,4 @@
+import 'package:counter/add_expense.dart';
 import 'package:flutter/material.dart';
 
 class ExpensesPage extends StatelessWidget {
@@ -16,7 +17,7 @@ class ExpensesPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Ação para adicionar novo item
+          showAddExpenseDialog(context);
         },
         shape: const CircleBorder(),
         backgroundColor: Colors.blue,
@@ -47,10 +48,7 @@ class ExpensesPage extends StatelessWidget {
             children: [
               const Text(
                 'R\$ 4600,00',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
               ),
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 32),
@@ -66,7 +64,7 @@ class ExpensesPage extends StatelessWidget {
   }
 
   Widget _buildMonthSelector() {
-    final months = ['JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ', 'JAN'];
+    final months = ['JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ', 'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN'];
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -116,14 +114,12 @@ class ExpensesPage extends StatelessWidget {
                 children: [
                   Text(
                     expense['date']!,
-                    style:
-                        const TextStyle(fontSize: 16, color: Colors.blueGrey),
+                    style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
                   ),
                   const SizedBox(width: 16),
                   Text(
                     expense['description']!,
-                    style:
-                        const TextStyle(fontSize: 16, color: Colors.blueGrey),
+                    style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
                   ),
                 ],
               ),
@@ -132,8 +128,7 @@ class ExpensesPage extends StatelessWidget {
                 children: [
                   Text(
                     expense['amount']!,
-                    style:
-                        const TextStyle(fontSize: 16, color: Colors.blueGrey),
+                    style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
                   ),
                   const SizedBox(width: 16),
                   IconButton(
@@ -153,17 +148,14 @@ class ExpensesPage extends StatelessWidget {
 
   Widget _buildTotal() {
     return Container(
-      padding: const EdgeInsets.only(bottom: 84.0),
+      padding: const EdgeInsets.only(bottom: 100.0, right: 16),
       color: Colors.white,
       child: const Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text(
             '4500,00',
-            style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueAccent),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blueAccent),
           ),
         ],
       ),
