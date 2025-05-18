@@ -64,7 +64,7 @@ class ExpensesPage extends StatelessWidget {
   }
 
   Widget _buildMonthSelector() {
-    final months = ['JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ', 'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN'];
+    final months = ['JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ', 'JAN'];
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
