@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import 'models/expense_model.dart';
+
 class ExpenseProvider with ChangeNotifier {
-  final List<Map<String, dynamic>> _expenses = [];
+  final List<ExpenseModel> _expenses = [];
 
-  List<Map<String, dynamic>> get expenses => _expenses;
+  List<ExpenseModel> get expenses => _expenses;
 
-  void addExpense({required String description, required double amount, required String date}) {
-    _expenses.add({
-      'description': description,
-      'amount': amount,
-      'date': date,
-    });
+  
+
+  void addExpense({required String description, required double amount, required DateTime date}) {
+    _expenses.add(ExpenseModel(description: description, amount: amount, date: date));
     notifyListeners();
   }
 }
@@ -86,7 +86,7 @@ void showAddExpenseDialog(BuildContext context) {
                     Provider.of<ExpenseProvider>(context, listen: false).addExpense(
                       description: desc,
                       amount: amount,
-                      date: DateFormat('dd/MM/yy').format(selectedDate),
+                      date: selectedDate,
                     );
                     Navigator.pop(context);
                   }

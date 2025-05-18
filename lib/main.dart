@@ -1,4 +1,4 @@
-import 'package:counter/add_expense.dart';
+import 'package:counter/expense_provider.dart';
 import 'package:counter/home.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ExpensesPage(),
+      home: ExpensesPage(),
     );
   }
 }

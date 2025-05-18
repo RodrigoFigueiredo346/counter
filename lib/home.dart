@@ -1,33 +1,40 @@
-import 'package:counter/add_expense.dart';
+import 'package:counter/expense_provider.dart';
+import 'package:counter/models/expense_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ExpensesPage extends StatelessWidget {
-  const ExpensesPage({super.key});
+  ExpensesPage({super.key});
+  late ExpenseProvider expenseProvider;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blue, // Fundo da tela
-      body: Column(
-        children: [
-          _buildHeader(),
-          _buildMonthSelector(),
-          Expanded(child: _buildExpenseList()),
-          _buildTotal(),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showAddExpenseDialog(context);
-        },
-        shape: const CircleBorder(),
-        backgroundColor: Colors.blue,
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 48,
+    expenseProvider = Provider.of<ExpenseProvider>(context);
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.blue, // Fundo da tela
+        body: Column(
+          children: [
+            _buildHeader(),
+            _buildMonthSelector(),
+            Expanded(child: _buildExpenseList()),
+            _buildTotal(),
+          ],
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            showAddExpenseDialog(context);
+          },
+          shape: const CircleBorder(),
+          backgroundColor: Colors.blue,
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+            size: 48,
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -87,14 +94,6 @@ class ExpensesPage extends StatelessWidget {
   }
 
   Widget _buildExpenseList() {
-    final expenses = List.generate(10, (index) {
-      return {
-        'date': '26/09',
-        'description': 'açaí',
-        'amount': '15,00',
-      };
-    });
-
     return Container(
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(
@@ -104,40 +103,29 @@ class ExpensesPage extends StatelessWidget {
           color: Colors.white),
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-        itemCount: expenses.length,
+        itemCount: expenseProvider.expenses.length,
         itemBuilder: (context, index) {
-          final expense = expenses[index];
+          final expense = expenseProvider.expenses[index];
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Text(
-                    expense['date']!,
-                    style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
-                  ),
-                  const SizedBox(width: 16),
-                  Text(
-                    expense['description']!,
-                    style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
-                  ),
-                ],
+              Text(
+                expense.description,
+                style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    expense['amount']!,
-                    style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
-                  ),
-                  const SizedBox(width: 16),
-                  IconButton(
-                    onPressed: () {
-                      // Ação para deletar o item
-                    },
-                    icon: const Icon(Icons.delete, color: Colors.grey),
-                  ),
-                ],
+              Text(
+                expense.formattedDate,
+                style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
+              ),
+              Text(
+                expense.formattedAmount,
+                style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
+              ),
+              IconButton(
+                onPressed: () {
+                  // Ação para deletar o item
+                },
+                icon: const Icon(Icons.delete, color: Colors.grey),
               ),
             ],
           );
