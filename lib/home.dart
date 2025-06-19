@@ -7,6 +7,11 @@ class ExpensesPage extends StatelessWidget {
   ExpensesPage({super.key});
   late ExpenseProvider expenseProvider;
 
+  String _getMonthAbbreviation(int month) {
+    const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+    return monthNames[month - 1];
+  }
+
   @override
   Widget build(BuildContext context) {
     expenseProvider = Provider.of<ExpenseProvider>(context);
@@ -16,8 +21,9 @@ class ExpensesPage extends StatelessWidget {
         body: Column(
           children: [
             _buildHeader(),
+            _buildSelectorYear(),
             _buildMonthSelector(),
-            Expanded(child: _buildExpenseList()),
+            Expanded(child: _buildExpenseList(expenseProvider.filteredExpenses)),
             _buildTotal(),
           ],
         ),
@@ -46,7 +52,7 @@ class ExpensesPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Meus gastos!',
+            'Counter',
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           const SizedBox(height: 8),
@@ -54,7 +60,7 @@ class ExpensesPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'R\$ 4600,00',
+                'Olá',
                 style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
               ),
               IconButton(
@@ -70,22 +76,52 @@ class ExpensesPage extends StatelessWidget {
     );
   }
 
+  Widget _buildSelectorYear() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => expenseProvider.setSelectedYear(expenseProvider.selectedYear - 1),
+        ),
+        Text(
+          '${expenseProvider.selectedYear}',
+          style: const TextStyle(color: Colors.white, fontSize: 18),
+        ),
+        IconButton(
+          icon: const Icon(Icons.arrow_forward, color: Colors.white),
+          onPressed: () => expenseProvider.setSelectedYear(expenseProvider.selectedYear + 1),
+        ),
+      ],
+    );
+  }
+
   Widget _buildMonthSelector() {
-    final months = ['JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ', 'JAN'];
+    final currentMonth = expenseProvider.selectedMonth;
+    final currentYear = expenseProvider.selectedYear;
+
+    final months = List.generate(12, (i) {
+      final date = DateTime(currentYear, i + 1);
+      final monthAbbr = _getMonthAbbreviation(date.month);
+      return {'label': monthAbbr, 'month': date.month};
+    });
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       color: Colors.blue,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: months.map((month) {
-          final isActive = month == 'OUT';
-          return Text(
-            month,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-              fontSize: isActive ? 24 : 18,
+        children: months.map((entry) {
+          final isActive = currentMonth == entry['month'];
+          return GestureDetector(
+            onTap: () => expenseProvider.setSelectedMonth(entry['month'] as int),
+            child: Text(
+              '${entry['label']}',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                fontSize: isActive ? 18 : 12,
+              ),
             ),
           );
         }).toList(),
@@ -93,37 +129,29 @@ class ExpensesPage extends StatelessWidget {
     );
   }
 
-  Widget _buildExpenseList() {
+  Widget _buildExpenseList(List<ExpenseModel> expenses) {
     return Container(
       decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(32),
-            topRight: Radius.circular(32),
-          ),
-          color: Colors.white),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(32),
+          topRight: Radius.circular(32),
+        ),
+        color: Colors.white,
+      ),
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-        itemCount: expenseProvider.expenses.length,
+        itemCount: expenseProvider.filteredExpenses.length,
         itemBuilder: (context, index) {
-          final expense = expenseProvider.expenses[index];
+          final expense = expenseProvider.filteredExpenses[index];
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                expense.description,
-                style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
-              ),
-              Text(
-                expense.formattedDate,
-                style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
-              ),
-              Text(
-                expense.formattedAmount,
-                style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
-              ),
+              Text(expense.description, style: const TextStyle(fontSize: 16, color: Colors.blueGrey)),
+              Text(expense.formattedDate, style: const TextStyle(fontSize: 16, color: Colors.blueGrey)),
+              Text(expense.formattedAmount, style: const TextStyle(fontSize: 16, color: Colors.blueGrey)),
               IconButton(
                 onPressed: () {
-                  // Ação para deletar o item
+                  expenseProvider.deleteExpense(expense);
                 },
                 icon: const Icon(Icons.delete, color: Colors.grey),
               ),
@@ -138,12 +166,12 @@ class ExpensesPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.only(bottom: 100.0, right: 16),
       color: Colors.white,
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text(
-            '4500,00',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+            'Total        R\$ ${expenseProvider.totalFiltered.toStringAsFixed(2)}',
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blueAccent),
           ),
         ],
       ),

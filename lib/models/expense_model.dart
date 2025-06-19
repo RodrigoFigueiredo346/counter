@@ -1,9 +1,18 @@
 import 'package:intl/intl.dart';
+import 'package:hive/hive.dart';
 
+part 'expense_model.g.dart';
+
+@HiveType(typeId: 0)
 class ExpenseModel {
-  final String description;
-  final double amount;
-  final DateTime date;
+  @HiveField(0)
+  String description;
+
+  @HiveField(1)
+  double amount;
+
+  @HiveField(2)
+  DateTime date;
 
   ExpenseModel({
     required this.description,

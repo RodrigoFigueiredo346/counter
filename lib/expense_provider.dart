@@ -1,18 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'models/expense_model.dart';
 
-class ExpenseProvider with ChangeNotifier {
-  final List<ExpenseModel> _expenses = [];
+class ExpenseProvider extends ChangeNotifier {
+  final Box<ExpenseModel> _box = Hive.box<ExpenseModel>('expenses');
 
-  List<ExpenseModel> get expenses => _expenses;
+  int _selectedMonth = DateTime.now().month;
+  int _selectedYear = DateTime.now().year;
 
-  
+  int get selectedMonth => _selectedMonth;
+  int get selectedYear => _selectedYear;
 
-  void addExpense({required String description, required double amount, required DateTime date}) {
-    _expenses.add(ExpenseModel(description: description, amount: amount, date: date));
+  void setSelectedMonth(int month) {
+    _selectedMonth = month;
+    notifyListeners();
+  }
+
+  void setSelectedYear(int year) {
+    if (year > 2009 && year < DateTime.now().year + 11) {
+      _selectedYear = year;
+    }
+    notifyListeners();
+  }
+
+  List<ExpenseModel> get expenses => _box.values.toList()..sort((a, b) => b.date.compareTo(a.date));
+
+  List<ExpenseModel> get filteredExpenses => expenses.where((e) => e.date.month == _selectedMonth && e.date.year == _selectedYear).toList();
+
+  double get totalFiltered => filteredExpenses.fold(0, (sum, e) => sum + e.amount);
+
+  void addExpense(ExpenseModel expense) {
+    _box.add(expense);
+    notifyListeners();
+  }
+
+  void deleteExpense(ExpenseModel expense) {
+    final key = _box.keyAt(_box.values.toList().indexOf(expense));
+    _box.delete(key);
     notifyListeners();
   }
 }
@@ -84,9 +111,11 @@ void showAddExpenseDialog(BuildContext context) {
 
                   if (desc.isNotEmpty && amount != null) {
                     Provider.of<ExpenseProvider>(context, listen: false).addExpense(
-                      description: desc,
-                      amount: amount,
-                      date: selectedDate,
+                      ExpenseModel(
+                        description: desc,
+                        amount: amount,
+                        date: selectedDate,
+                      ),
                     );
                     Navigator.pop(context);
                   }
