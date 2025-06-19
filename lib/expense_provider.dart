@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +33,8 @@ class ExpenseProvider extends ChangeNotifier {
 
   double get totalFiltered => filteredExpenses.fold(0, (sum, e) => sum + e.amount);
 
+  static const colorMain = Color.fromARGB(255, 54, 88, 84);
+
   void addExpense(ExpenseModel expense) {
     _box.add(expense);
     notifyListeners();
@@ -64,11 +67,13 @@ void showAddExpenseDialog(BuildContext context) {
                   TextField(
                     controller: descriptionController,
                     decoration: const InputDecoration(labelText: 'Descrição'),
+                    inputFormatters: [LengthLimitingTextInputFormatter(20)],
                   ),
                   TextField(
                     controller: amountController,
                     decoration: const InputDecoration(labelText: 'Valor'),
                     keyboardType: TextInputType.number,
+                    inputFormatters: [LengthLimitingTextInputFormatter(9)],
                   ),
                   const SizedBox(height: 16),
                   Row(

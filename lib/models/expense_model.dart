@@ -20,7 +20,7 @@ class ExpenseModel {
     required this.date,
   });
 
-  String get formattedDate => DateFormat('dd/MM/yy').format(date);
+  String get formattedDate => DateFormat('dd/MM').format(date);
 
   String get formattedAmount => 'R\$ ${amount.toStringAsFixed(2)}';
 }
